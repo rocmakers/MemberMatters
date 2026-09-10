@@ -30,8 +30,12 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
-        self.device: MemberbucksDevice | Doors | Interlock | FobTesterDevice | None = None
-        self.DeviceClass: MemberbucksDevice | Doors | Interlock | FobTesterDevice | None = None
+        self.device: MemberbucksDevice | Doors | Interlock | FobTesterDevice | None = (
+            None
+        )
+        self.DeviceClass: (
+            MemberbucksDevice | Doors | Interlock | FobTesterDevice | None
+        ) = None
         self.device_group_name: str | None = None
         self.authorised: bool = False
         self.ping_count: int = 0
@@ -697,7 +701,9 @@ class FobTesterConsumer(AccessDeviceConsumer):
             "card_id": card_id,
             "full_name": profile.get_full_name(),
             "show_account_status": self.device.show_account_status,
-            "account_status": profile.state if self.device.show_account_status else None,
+            "account_status": (
+                profile.state if self.device.show_account_status else None
+            ),
         }
 
         self.device.log_event(
