@@ -14,6 +14,7 @@
         <q-tab name="doors" :label="$tc('access.door', 2)" />
         <q-tab name="interlocks" :label="$tc('access.interlock', 2)" />
         <q-tab name="memberbucks" :label="$tc('access.memberbucksDevice', 2)" />
+        <q-tab name="fobtester" :label="$tc('access.fobTesterDevice', 2)" />
       </q-tabs>
       <q-separator />
       <q-tab-panels v-model="tab" animated>
@@ -38,6 +39,13 @@
             @openDevice="manageDevice"
           ></devices-list>
         </q-tab-panel>
+        <q-tab-panel name="fobtester" style="width: 100%">
+          <devices-list
+            deviceChoice="fob-tester-devices"
+            :tableData="fobTesterDevices"
+            @openDevice="manageDevice"
+          ></devices-list>
+        </q-tab-panel>
       </q-tab-panels>
     </q-card>
   </q-page>
@@ -58,17 +66,24 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('adminTools', ['interlocks', 'doors', 'memberbucksDevices']),
+    ...mapGetters('adminTools', [
+      'interlocks',
+      'doors',
+      'memberbucksDevices',
+      'fobTesterDevices',
+    ]),
   },
   beforeMount() {
     this.getDoors();
     this.getInterlocks();
     this.getMemberbucksDevices();
+    this.getFobTesterDevices();
 
     this.interval = setInterval(() => {
       this.getDoors();
       this.getInterlocks();
       this.getMemberbucksDevices();
+      this.getFobTesterDevices();
     }, 30 * 1000);
   },
   beforeUnmount() {
@@ -79,6 +94,7 @@ export default {
       'getInterlocks',
       'getDoors',
       'getMemberbucksDevices',
+      'getFobTesterDevices',
     ]),
     manageDevice(deviceId, deviceTypeStr) {
       this.$q

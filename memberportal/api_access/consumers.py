@@ -8,6 +8,7 @@ from access.models import (
     Interlock,
     InterlockLog,
     MemberbucksDevice,
+    FobTesterDevice,
     AccessControlledDeviceAPIKey,
 )
 from services.discord import post_purchase_to_discord
@@ -29,8 +30,8 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
-        self.device: MemberbucksDevice | Doors | Interlock | None = None
-        self.DeviceClass: MemberbucksDevice | Doors | Interlock | None = None
+        self.device: MemberbucksDevice | Doors | Interlock | FobTesterDevice | None = None
+        self.DeviceClass: MemberbucksDevice | Doors | Interlock | FobTesterDevice | None = None
         self.device_group_name: str | None = None
         self.authorised: bool = False
         self.ping_count: int = 0
@@ -642,3 +643,73 @@ class MemberbucksConsumer(AccessDeviceConsumer):
 
         else:
             return False
+
+
+class FobTesterConsumer(AccessDeviceConsumer):
+    type = "fobtester"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.DeviceClass = FobTesterDevice
+
+    def handle_other_packet(self, content):
+        if content.get("command") != "fob_lookup":
+            return False
+
+        card_id = content.get("card_id")
+        request_id = content.get("request_id")
+
+        if card_id is None:
+            self.send_json(
+                {
+                    "command": "fob_lookup_result",
+                    "request_id": request_id,
+                    "success": False,
+                    "reason": "invalid_card_id",
+                    "found": False,
+                }
+            )
+            return True
+
+        profile = Profile.objects.filter(rfid=card_id).first()
+        if not profile:
+            self.device.log_event(
+                description="Fob tester lookup returned unknown card.",
+                data=json.dumps({"card_id": card_id}),
+            )
+            self.send_json(
+                {
+                    "command": "fob_lookup_result",
+                    "request_id": request_id,
+                    "success": True,
+                    "reason": "unknown_card",
+                    "found": False,
+                    "card_id": card_id,
+                }
+            )
+            return True
+
+        response = {
+            "command": "fob_lookup_result",
+            "request_id": request_id,
+            "success": True,
+            "found": True,
+            "card_id": card_id,
+            "full_name": profile.get_full_name(),
+            "show_account_status": self.device.show_account_status,
+            "account_status": profile.state if self.device.show_account_status else None,
+        }
+
+        self.device.log_event(
+            description="Fob tester lookup returned a member.",
+            data=json.dumps(
+                {
+                    "card_id": card_id,
+                    "user_id": profile.user.id,
+                    "account_status": profile.state,
+                }
+            ),
+        )
+
+        self.send_json(response)
+        return True
