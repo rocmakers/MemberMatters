@@ -206,12 +206,14 @@ export default {
     door: 'Dörr | Dörrar',
     interlock: 'Lås | Lås',
     memberbucksDevice: 'Spacebucks | Spacebucks',
+    fobTesterDevice: 'Fobtester | Fobtesters',
     defaultAccess: 'Medlemar har åtkomst som default',
     maintenanceLockout: 'Underhållslåsning är påslagen',
     playTheme: 'Spela tema på swipe',
     exemptSignin:
       'Undantag från kravet på inloggning på webbplatsen (om aktiverad)',
     hiddenToMembers: 'Dold från medlemmar på deras åtkomst-sida',
+    showAccountStatus: 'Visa kontostatus på enheten',
     user: 'Användare',
     totalSwipes: 'Total Swipes',
     totalTime: 'Total Time',
@@ -647,6 +649,12 @@ export default {
     finished: 'Färdig',
     totalPurchases: 'Total köp',
     totalVolume: 'Total volym',
+  },
+  'fob-tester-devices': {
+    nodata: 'Det finns inga fobtester-enheter i systemet.',
+    name: 'Fobtester enhetsnamn',
+    description: 'Fobtester enhetsbeskrivning',
+    ipAddress: 'Fobtester enhet IP Address',
   },
   registrationCard: {
     register: 'Registrera ett konto',

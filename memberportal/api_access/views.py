@@ -2,6 +2,7 @@ from access.models import (
     Doors,
     Interlock,
     MemberbucksDevice,
+    FobTesterDevice,
     HasExternalAccessControlAPIKey,
 )
 from profile.models import User
@@ -25,6 +26,7 @@ class AccessSystemStatus(APIView):
             "doors": [],
             "interlocks": [],
             "memberbucksDevices": [],
+            "fobTesterDevices": [],
         }
 
         error_if_offline = request.GET.get("errorIfOffline", False)
@@ -112,6 +114,26 @@ class AccessSystemStatus(APIView):
 
         # report spacebucksDevices metrics
         report_count("spacebucksDevice")
+        reset_count()
+
+        for fobTesterDevice in FobTesterDevice.objects.all():
+            offline = fobTesterDevice.get_unavailable()
+            update_count(offline, fobTesterDevice.locked_out)
+
+            statusObject["fobTesterDevices"].append(
+                {
+                    "id": fobTesterDevice.id,
+                    "name": fobTesterDevice.name,
+                    "lastSeen": fobTesterDevice.last_seen,
+                    "lockedOut": fobTesterDevice.locked_out,
+                    "offline": offline,
+                    "showAccountStatus": fobTesterDevice.show_account_status,
+                }
+            )
+            if offline and fobTesterDevice.report_online_status:
+                a_device_is_offline = True
+
+        report_count("fobtester")
         reset_count()
 
         if error_if_offline and a_device_is_offline:

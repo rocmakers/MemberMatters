@@ -142,6 +142,23 @@
                       :error="saved.error"
                     />
                   </div>
+                  <div
+                    v-if="deviceType === 'fob-tester-devices'"
+                    class="row items-center q-gutter-sm"
+                  >
+                    <q-checkbox
+                      v-model="device.showAccountStatus"
+                      :label="$t('access.showAccountStatus')"
+                      :debounce="debounceLength"
+                      @update:model-value="saveChange('showAccountStatus')"
+                    />
+                    <q-space />
+                    <saved-notification
+                      :success="saved.showAccountStatus"
+                      show-text
+                      :error="saved.error"
+                    />
+                  </div>
                 </div>
 
                 <div class="row">
@@ -342,6 +359,7 @@ export default {
         playThemeOnSwipe: false,
         exemptFromSignin: false,
         hiddenToMembers: false,
+        showAccountStatus: false,
       },
       device: {
         name: '',
@@ -352,6 +370,7 @@ export default {
         playThemeOnSwipe: null,
         exemptFromSignin: null,
         hiddenToMembers: null,
+        showAccountStatus: null,
         usage: null,
         stats: [],
       },
@@ -363,6 +382,7 @@ export default {
       this.getDoors(),
       this.getInterlocks(),
       this.getMemberbucksDevices(),
+      this.getFobTesterDevices(),
     ]).then(() => {
       this.initForm();
       if (!this.device.id) this.$router.push({ name: 'Error404' });
@@ -372,6 +392,7 @@ export default {
       this.getDoors();
       this.getInterlocks();
       this.getMemberbucksDevices();
+      this.getFobTesterDevices();
     }, 30 * 1000);
 
     // find the device index from the devices list
@@ -394,6 +415,16 @@ export default {
       this.deviceIndex = this.memberbucksDevices.findIndex(
         (item) => String(item.id) === this.deviceId
       );
+    } else if (this.deviceType === 'fob-tester-devices') {
+      this.disabled = {
+        unlock: true,
+        lock: true,
+        reboot: true,
+        sync: true,
+      };
+      this.deviceIndex = this.fobTesterDevices.findIndex(
+        (item) => String(item.id) === this.deviceId
+      );
     } else {
       console.error('Invalid device type: ', this.deviceType);
     }
@@ -403,6 +434,7 @@ export default {
       'getDoors',
       'getInterlocks',
       'getMemberbucksDevices',
+      'getFobTesterDevices',
     ]),
     ...mapGetters('config', ['siteLocaleCurrency']),
     initForm() {
@@ -421,6 +453,11 @@ export default {
           this.deviceIndex = 0;
         }
         this.device = this.memberbucksDevices[this.deviceIndex];
+      } else if (this.deviceType === 'fob-tester-devices') {
+        if (this.deviceIndex === this.fobTesterDevices.length) {
+          this.deviceIndex = 0;
+        }
+        this.device = this.fobTesterDevices[this.deviceIndex];
       }
     },
     unlockDevice() {
@@ -598,6 +635,8 @@ export default {
           this.deviceIndex += this.interlocks.length;
         } else if (this.deviceType === 'memberbucks-devices') {
           this.deviceIndex += this.memberbucksDevices.length;
+        } else if (this.deviceType === 'fob-tester-devices') {
+          this.deviceIndex += this.fobTesterDevices.length;
         }
       }
       if (this.deviceType === 'doors') {
@@ -606,12 +645,19 @@ export default {
         newDevice = this.interlocks[this.deviceIndex];
       } else if (this.deviceType === 'memberbucks-devices') {
         newDevice = this.memberbucksDevices[this.deviceIndex];
+      } else if (this.deviceType === 'fob-tester-devices') {
+        newDevice = this.fobTesterDevices[this.deviceIndex];
       }
       this.device = newDevice;
     },
   },
   computed: {
-    ...mapGetters('adminTools', ['doors', 'interlocks', 'memberbucksDevices']),
+    ...mapGetters('adminTools', [
+      'doors',
+      'interlocks',
+      'memberbucksDevices',
+      'fobTesterDevices',
+    ]),
     deviceCount() {
       if (this.deviceType === 'doors') {
         return this.doors.length;
@@ -619,6 +665,8 @@ export default {
         return this.interlocks.length;
       } else if (this.deviceType === 'memberbucks-devices') {
         return this.memberbucksDevices.length;
+      } else if (this.deviceType === 'fob-tester-devices') {
+        return this.fobTesterDevices.length;
       } else return 0;
     },
     columnI18n() {
@@ -707,6 +755,8 @@ export default {
             format: (val) => this.$n(val, 'currency', this.siteLocaleCurrency),
           },
         ];
+      } else if (this.deviceType === 'fob-tester-devices') {
+        columns = [];
       }
 
       return columns;

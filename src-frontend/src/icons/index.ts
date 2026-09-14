@@ -17,6 +17,7 @@ export default {
   dollar: 'fas fa-dollar-sign',
   doors: 'mdi-door-closed-lock',
   interlocks: 'mdi-power-plug',
+  fobTesterDevices: 'mdi-card-account-details-outline',
   kiosks: 'mdi-desktop-mac',
 
   tools: 'mdi-tools',

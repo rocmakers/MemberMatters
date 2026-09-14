@@ -488,6 +488,64 @@ class MemberbucksDevices(APIView):
         return Response()
 
 
+class FobTesterDevices(APIView):
+    """
+    get: returns a list of fob tester devices.
+    put: update a specific fob tester device.
+    delete: delete a specific fob tester device.
+    """
+
+    permission_classes = (permissions.IsAdminUser,)
+
+    def get(self, request):
+        devices = models.FobTesterDevice.objects.all()
+
+        def get_device(device):
+            return {
+                "id": device.id,
+                "authorised": device.authorised,
+                "name": device.name,
+                "description": device.description,
+                "ipAddress": device.ip_address,
+                "lastSeen": device.last_seen,
+                "offline": device.get_unavailable(),
+                "defaultAccess": device.all_members,
+                "maintenanceLockout": device.locked_out,
+                "playThemeOnSwipe": device.play_theme,
+                "exemptFromSignin": device.exempt_signin,
+                "hiddenToMembers": device.hidden,
+                "showAccountStatus": device.show_account_status,
+                "userStats": [],
+            }
+
+        return Response(map(get_device, devices))
+
+    def put(self, request, device_id):
+        device = models.FobTesterDevice.objects.get(pk=device_id)
+        data = request.data
+
+        device.name = data.get("name")
+        device.description = data.get("description")
+        device.ip_address = data.get("ipAddress")
+
+        device.all_members = data.get("defaultAccess")
+        device.locked_out = data.get("maintenanceLockout")
+        device.play_theme = data.get("playThemeOnSwipe")
+        device.exempt_signin = data.get("exemptFromSignin")
+        device.hidden = data.get("hiddenToMembers")
+        device.show_account_status = data.get("showAccountStatus")
+
+        device.save()
+
+        return Response()
+
+    def delete(self, request, device_id):
+        device = models.FobTesterDevice.objects.get(pk=device_id)
+        device.delete()
+
+        return Response()
+
+
 class MemberAccess(APIView):
     """
     get: This method gets a member's access permissions.
