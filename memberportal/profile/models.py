@@ -453,6 +453,8 @@ class Profile(ExportModelOperationsMixin("profile"), models.Model):
     digital_id_token = models.UUIDField(
         "Digital ID Token", default=uuid.uuid4, null=True, blank=True
     )
+    # TODO: Replace datetime.now with timezone.now to avoid naive datetime
+    # warnings when USE_TZ is enabled.
     digital_id_token_expire = models.DateTimeField(
         editable=False, default=datetime.now, null=True, blank=True
     )

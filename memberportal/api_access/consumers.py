@@ -4,6 +4,7 @@ from asgiref.sync import async_to_sync
 import logging
 import datetime
 from access.models import (
+    AccessControlledDevice,
     Doors,
     Interlock,
     InterlockLog,
@@ -54,6 +55,22 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
             "hidden": True,
             "report_online_status": False,
         }
+
+        # serial_number is unique across all device subtypes (shared parent table), so check
+        # there isn't already a device with this serial number registered as a different type
+        existing_device = AccessControlledDevice.objects.filter(
+            serial_number=device_id
+        ).first()
+        if existing_device is not None and not isinstance(
+            existing_device, self.DeviceClass
+        ):
+            logger.error(
+                f"Device ({device_id}) is already registered as a {existing_device.type} "
+                f"device, refusing to also register it as a {self.DeviceClass.type}."
+            )
+            self.accept()
+            self.close()
+            return
 
         # Get or create the device object and check it in
         device_object, created = self.DeviceClass.objects.get_or_create(

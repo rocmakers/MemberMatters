@@ -48,15 +48,31 @@ User = get_user_model()
 # Config
 # ---------------------------------------------------------------------------
 
-MYSQL_CONFIG = dict(
-    host="192.168.7.75",
-    port=3306,
-    user="jim_dev",
-    password="Stumble-Ducky-Armored-Sector-Baritone2-Apple",
-    database="memberDB_PROD",
-    cursorclass=pymysql.cursors.DictCursor,
-    connect_timeout=10,
-)
+def get_mysql_config():
+    """Build legacy MySQL source config from environment variables."""
+    required = {
+        "host": os.environ.get("MM_LEGACY_MYSQL_HOST"),
+        "user": os.environ.get("MM_LEGACY_MYSQL_USER"),
+        "password": os.environ.get("MM_LEGACY_MYSQL_PASSWORD"),
+        "database": os.environ.get("MM_LEGACY_MYSQL_DB"),
+    }
+    missing = [f"MM_LEGACY_MYSQL_{k.upper()}" for k, v in required.items() if not v]
+    if missing:
+        raise RuntimeError(
+            "Missing legacy MySQL config env vars: "
+            + ", ".join(missing)
+            + ". Set them before running import scripts."
+        )
+
+    return dict(
+        host=required["host"],
+        port=int(os.environ.get("MM_LEGACY_MYSQL_PORT", "3306")),
+        user=required["user"],
+        password=required["password"],
+        database=required["database"],
+        cursorclass=pymysql.cursors.DictCursor,
+        connect_timeout=int(os.environ.get("MM_LEGACY_MYSQL_CONNECT_TIMEOUT", "10")),
+    )
 
 STATUS_MAP = {
     6: "active",
@@ -88,7 +104,7 @@ def clean_str(val, default=""):
 
 
 def fetch_members(limit):
-    conn = pymysql.connect(**MYSQL_CONFIG)
+    conn = pymysql.connect(**get_mysql_config())
     with conn:
         with conn.cursor() as cur:
             cur.execute(
@@ -171,8 +187,20 @@ def import_member(row, dry_run):
     phone = clean_phone(row["PhoneNum"])
 
     fobs = row.get("_fobs", [])
-    primary_fob = fobs[0]["FobScanID"] if fobs else None
+    primary_fob = clean_str(fobs[0]["FobScanID"]) if fobs else ""
+    primary_fob = primary_fob or None
     extra_fobs = fobs[1:]
+
+    rfid_conflict_note = ""
+    if primary_fob and Profile.objects.filter(rfid=primary_fob).exists():
+        # RFID is globally unique; keep importing and preserve the value in notes.
+        print(
+            f"  WARN {email} — RFID {primary_fob} already in use, leaving rfid blank"
+        )
+        rfid_conflict_note = (
+            f"Legacy primary RFID not imported due to duplicate value: {primary_fob}"
+        )
+        primary_fob = None
 
     fob_summary = f"  fobs={len(fobs)}" if fobs else "  fobs=none"
     print(f"  IMPORT {email} ({first} {last}) state={state}{fob_summary}")
@@ -195,6 +223,8 @@ def import_member(row, dry_run):
         # re-triggering the save() override.
         # Build notes: legacy notes + extra fobs appended
         notes = clean_str(row["Notes"])
+        if rfid_conflict_note:
+            notes = (notes + "\n\n" + rfid_conflict_note).strip()
         if extra_fobs:
             extra_lines = "\n".join(
                 f"  Fob {f['FobLabel']} (ScanID: {f['FobScanID']})" for f in extra_fobs
@@ -210,6 +240,7 @@ def import_member(row, dry_run):
             state=state,
             phone=phone,
             rfid=primary_fob,
+            digital_id_token_expire=timezone.now(),
             suffix=clean_str(row["Suffix"])[:45],
             birthdate=row["Birthdate"] or None,
             notes=notes,
@@ -252,15 +283,29 @@ def main():
     parser.add_argument(
         "--dry-run", action="store_true", help="Preview without writing"
     )
-    args = parser.parse_args()
+    # When piped into "python manage.py shell < script.py", sys.argv contains
+    # Django shell args. Parse an empty argv in that mode so this script still runs.
+    argv = [] if __name__ == "django.core.management.commands.shell" else sys.argv[1:]
+    args = parser.parse_args(argv)
 
     limit = 999999 if args.all else args.limit
 
+    from django.conf import settings
+
+    source_host = os.environ.get("MM_LEGACY_MYSQL_HOST", "<unset>")
+    source_db = os.environ.get("MM_LEGACY_MYSQL_DB", "<unset>")
     print(
-        f"{'DRY RUN — ' if args.dry_run else ''}Fetching up to {limit} members from legacy DB..."
+        f"Source legacy DB: mysql://{source_host}/{source_db} | "
+        f"Target Django DB engine: {settings.DATABASES['default']['ENGINE']}",
+        flush=True,
+    )
+
+    print(
+        f"{'DRY RUN — ' if args.dry_run else ''}Fetching up to {limit} members from legacy DB...",
+        flush=True,
     )
     rows = fetch_members(limit)
-    print(f"Fetched {len(rows)} rows.\n")
+    print(f"Fetched {len(rows)} rows.\n", flush=True)
 
     counts = {"imported": 0, "skip": 0, "dry": 0}
     for row in rows:
@@ -268,9 +313,10 @@ def main():
         counts[result] = counts.get(result, 0) + 1
 
     print(
-        f"\nDone. imported={counts['imported']} skipped={counts['skip']} dry={counts['dry']}"
+        f"\nDone. imported={counts['imported']} skipped={counts['skip']} dry={counts['dry']}",
+        flush=True,
     )
 
 
-if __name__ == "__main__":
+if __name__ in {"__main__", "django.core.management.commands.shell"}:
     main()
