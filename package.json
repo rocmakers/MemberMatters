@@ -7,7 +7,7 @@
     "lint-staged": "^11.0.0"
   },
   "scripts": {
-    "prepare": "husky install && pip3 install black",
+    "prepare": "husky install && pip3 install black==25.1.0",
     "pre-commit": "lint-staged"
   },
   "lint-staged": {
