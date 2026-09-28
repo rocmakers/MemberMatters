@@ -153,7 +153,9 @@ def process(input_path, output_dir, apply_changes):
         for legacy in csv.DictReader(source):
             first_name, last_name = parse_consumer_name(legacy.get("f_ConsumerName"))
             legacy_fob = clean(legacy.get("f_CardNO"))
-            matches = profiles_by_name.get((name_key(first_name), name_key(last_name)), [])
+            matches = profiles_by_name.get(
+                (name_key(first_name), name_key(last_name)), []
+            )
 
             if not first_name or not last_name or not legacy_fob:
                 unmatched.append(
@@ -171,7 +173,11 @@ def process(input_path, output_dir, apply_changes):
                 continue
 
             if len(matches) != 1:
-                reason = "no exact name match" if not matches else "multiple exact name matches"
+                reason = (
+                    "no exact name match"
+                    if not matches
+                    else "multiple exact name matches"
+                )
                 unmatched.append(
                     report_row(
                         legacy,
@@ -235,7 +241,9 @@ def process(input_path, output_dir, apply_changes):
 
     os.makedirs(output_dir, exist_ok=True)
     write_report(os.path.join(output_dir, "fobs_updated.csv"), updated)
-    write_report(os.path.join(output_dir, "fobs_already_assigned.csv"), already_assigned)
+    write_report(
+        os.path.join(output_dir, "fobs_already_assigned.csv"), already_assigned
+    )
     write_report(os.path.join(output_dir, "fobs_unmatched.csv"), unmatched)
     return len(updated), len(already_assigned), len(unmatched)
 
@@ -244,7 +252,9 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("input_csv", help="Legacy door-lock consumer CSV")
     parser.add_argument(
-        "--apply", action="store_true", help="Write missing profile fobs (default: dry-run)"
+        "--apply",
+        action="store_true",
+        help="Write missing profile fobs (default: dry-run)",
     )
     parser.add_argument(
         "--output-dir", default="fob_reports", help="Directory for output CSV reports"
@@ -252,7 +262,9 @@ def main(argv=None):
     args = parser.parse_args(argv)
     counts = process(args.input_csv, args.output_dir, args.apply)
     mode = "applied" if args.apply else "dry-run"
-    print(f"{mode}: updated={counts[0]} already_assigned={counts[1]} unmatched={counts[2]}")
+    print(
+        f"{mode}: updated={counts[0]} already_assigned={counts[1]} unmatched={counts[2]}"
+    )
 
 
 if __name__ == "__main__":
