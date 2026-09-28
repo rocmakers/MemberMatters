@@ -59,6 +59,7 @@ User = get_user_model()
 # Config (mirrors import_legacy_members.py)
 # ---------------------------------------------------------------------------
 
+
 def get_mysql_config():
     """Build legacy MySQL source config from environment variables."""
     required = {
@@ -85,6 +86,7 @@ def get_mysql_config():
         connect_timeout=int(os.environ.get("MM_LEGACY_MYSQL_CONNECT_TIMEOUT", "10")),
     )
 
+
 ACTIVE_STATUS = 6  # MembersStatus = Active in legacy
 
 # ---------------------------------------------------------------------------
@@ -101,7 +103,8 @@ def fetch_households():
     conn = pymysql.connect(**get_mysql_config())
     with conn:
         with conn.cursor() as cur:
-            cur.execute("""
+            cur.execute(
+                """
                 SELECT
                     m.MemberID,
                     m.HouseID,
@@ -118,7 +121,8 @@ def fetch_households():
                     HAVING COUNT(*) >= 2
                 )
                 ORDER BY m.HouseID ASC, m.MemberID ASC;
-            """)
+            """
+            )
             return cur.fetchall()
 
 
@@ -298,7 +302,8 @@ def main():
         result = import_household(house_id, members, args.dry_run, args.skip_inactive)
         counts[result] = counts.get(result, 0) + 1
 
-        print(f"""
+        print(
+            f"""
 Done.
   created             : {counts['created']}
   dry (would create)  : {counts['dry']}
@@ -306,7 +311,9 @@ Done.
   skip (<2 imported)  : {counts['skip_single']}
   skip (no members)   : {counts['skip_no_members']}
   skip (inactive prim): {counts['skip_inactive']}
-""", flush=True)
+""",
+            flush=True,
+        )
 
     if not args.dry_run and counts["created"] > 0:
         print(

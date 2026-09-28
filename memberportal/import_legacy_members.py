@@ -48,6 +48,7 @@ User = get_user_model()
 # Config
 # ---------------------------------------------------------------------------
 
+
 def get_mysql_config():
     """Build legacy MySQL source config from environment variables."""
     required = {
@@ -73,6 +74,7 @@ def get_mysql_config():
         cursorclass=pymysql.cursors.DictCursor,
         connect_timeout=int(os.environ.get("MM_LEGACY_MYSQL_CONNECT_TIMEOUT", "10")),
     )
+
 
 STATUS_MAP = {
     6: "active",
@@ -194,9 +196,7 @@ def import_member(row, dry_run):
     rfid_conflict_note = ""
     if primary_fob and Profile.objects.filter(rfid=primary_fob).exists():
         # RFID is globally unique; keep importing and preserve the value in notes.
-        print(
-            f"  WARN {email} — RFID {primary_fob} already in use, leaving rfid blank"
-        )
+        print(f"  WARN {email} — RFID {primary_fob} already in use, leaving rfid blank")
         rfid_conflict_note = (
             f"Legacy primary RFID not imported due to duplicate value: {primary_fob}"
         )
