@@ -25,11 +25,6 @@ class UserResource(resources.ModelResource):
     rfid = fields.Field(
         column_name="rfid", attribute="rfid", widget=ForeignKeyWidget(Profile, "rfid")
     )
-    state = fields.Field(
-        column_name="state",
-        attribute="state",
-        widget=ForeignKeyWidget(Profile, "state"),
-    )
 
     def dehydrate_first_name(self, user):
         try:
@@ -54,12 +49,6 @@ class UserResource(resources.ModelResource):
             return user.profile.rfid
         except Exception:
             return None
-
-    def dehydrate_state(self, user):
-        try:
-            return user.profile.state
-        except Exception:
-            return "noob"
 
     def before_import_row(self, row, **kwargs):
         user, created = User.objects.get_or_create(
