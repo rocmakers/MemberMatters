@@ -8,4 +8,8 @@ urlpatterns = [
         "access/memberbucks/<str:device_id>",
         consumers.MemberbucksConsumer.as_asgi(),
     ),
+    path(
+        "access/fobtester/<str:device_id>",
+        consumers.FobTesterConsumer.as_asgi(),
+    ),
 ]

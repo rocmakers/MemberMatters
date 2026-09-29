@@ -4,6 +4,7 @@ import type { Component } from 'vue';
 export type PageAndRouteConfigType = {
   icon: string;
   to?: string;
+  href?: string;
   name: string;
   loggedIn: boolean;
   kiosk?: boolean;
@@ -27,7 +28,6 @@ const PageAndRouteConfig: PageAndRouteConfigType[] = [
     kiosk: true, // whether this page should show up in kiosk mode
     hiddenMenu: true, // adds the route and page config, but don't show in the menu
     component: () => import('pages/Login.vue'), // which component to load as the page
-    bgGradient: true,
   },
   {
     icon: icons.signin, // specify the icon to use
@@ -165,6 +165,13 @@ const PageAndRouteConfig: PageAndRouteConfigType[] = [
         admin: true,
         component: () => import('pages/AdminTools/ManageShelves.vue'),
       },
+      {
+        icon: icons.djangoAdmin,
+        href: '/admin/',
+        name: 'djangoAdmin',
+        loggedIn: true,
+        admin: true,
+      },
     ],
   },
   {
@@ -286,7 +293,6 @@ const PageAndRouteConfig: PageAndRouteConfigType[] = [
     loggedIn: false,
     kiosk: true,
     component: () => import('pages/Login.vue'),
-    bgGradient: true,
   },
   {
     icon: icons.register,

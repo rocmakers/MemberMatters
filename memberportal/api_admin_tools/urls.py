@@ -69,6 +69,16 @@ urlpatterns = [
         name="MemberbucksDevices",
     ),
     path(
+        "api/admin/fob-tester-devices/",
+        views.FobTesterDevices.as_view(),
+        name="FobTesterDevices",
+    ),
+    path(
+        "api/admin/fob-tester-devices/<int:device_id>/",
+        views.FobTesterDevices.as_view(),
+        name="FobTesterDevices",
+    ),
+    path(
         "api/admin/tiers/",
         views.ManageMembershipTier.as_view(),
         name="ManageMembershipTier",

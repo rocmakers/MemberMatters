@@ -284,6 +284,37 @@ export default {
             format: (val) => this.$n(val, 'currency', this.siteLocaleCurrency),
           },
         ];
+      } else if (this.deviceChoice === 'fob-tester-devices') {
+        columns = [
+          {
+            name: 'id',
+            label: this.$t('tableHeading.id'),
+            field: 'id',
+            sortable: true,
+          },
+          {
+            name: 'name',
+            label: this.$t('tableHeading.name'),
+            field: 'name',
+            sortable: true,
+          },
+          {
+            name: 'lastSeen',
+            label: this.$t('access.lastSeen'),
+            field: 'lastSeen',
+            sortable: true,
+            format: (val) => this.formatDate(val),
+          },
+          {
+            name: 'showAccountStatus',
+            label: this.$t('access.showAccountStatus'),
+            field: (row) =>
+              row.showAccountStatus
+                ? this.$t('authorised')
+                : this.$t('unauthorised'),
+            sortable: true,
+          },
+        ];
       }
       return columns;
     },

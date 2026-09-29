@@ -17,10 +17,12 @@ export default {
   dollar: 'fas fa-dollar-sign',
   doors: 'mdi-door-closed-lock',
   interlocks: 'mdi-power-plug',
+  fobTesterDevices: 'mdi-card-account-details-outline',
   kiosks: 'mdi-desktop-mac',
 
   tools: 'mdi-tools',
   admintools: 'mdi-toolbox',
+  djangoAdmin: 'mdi-shield-account',
   reportIssue: 'mdi-alert',
   submitProxy: 'mdi-ballot',
   groupMembers: 'mdi-account-multiple',

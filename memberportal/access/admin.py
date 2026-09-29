@@ -38,6 +38,11 @@ class MemberbucksDeviceAdmin(admin.ModelAdmin):
     pass
 
 
+@admin.register(FobTesterDevice)
+class FobTesterDeviceAdmin(admin.ModelAdmin):
+    pass
+
+
 # TODO:
 # @admin.register(MemberbucksDeviceLog)
 # class MemberbucksDeviceLogAdmin(admin.ModelAdmin):

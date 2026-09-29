@@ -11,6 +11,7 @@ export default {
     doors: [],
     interlocks: [],
     memberbucksDevices: [],
+    fobTesterDevices: [],
     tiers: [],
   },
   getters: {
@@ -20,6 +21,7 @@ export default {
     doors: (state) => state.doors,
     interlocks: (state) => state.interlocks,
     memberbucksDevices: (state) => state.memberbucksDevices,
+    fobTesterDevices: (state) => state.fobTesterDevices,
     tiers: (state) => state.tiers,
   },
   mutations: {
@@ -40,6 +42,9 @@ export default {
     },
     setMemberbucksDevices(state, payload) {
       state.memberbucksDevices = payload;
+    },
+    setFobTesterDevices(state, payload) {
+      state.fobTesterDevices = payload;
     },
     setTiers(state, payload) {
       state.tiers = payload;
@@ -127,6 +132,20 @@ export default {
           .get('/api/admin/memberbucks-devices/')
           .then((result) => {
             commit('setMemberbucksDevices', result.data);
+            resolve();
+          })
+          .catch((error) => {
+            reject();
+            throw error;
+          });
+      });
+    },
+    getFobTesterDevices({ commit }) {
+      return new Promise((resolve, reject) => {
+        api
+          .get('/api/admin/fob-tester-devices/')
+          .then((result) => {
+            commit('setFobTesterDevices', result.data);
             resolve();
           })
           .catch((error) => {

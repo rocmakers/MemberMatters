@@ -46,6 +46,7 @@ export default {
     manageBillingGroups: 'Faktureringsgrupper',
     manageAddons: 'Prenumerationstillägg',
     manageShelves: 'Hylluthyrning',
+    djangoAdmin: 'Django Admin',
   },
   dashboard: {
     usefulResources: 'Medlemsresurser',
@@ -72,8 +73,7 @@ export default {
     noValue: 'Inget värde',
     noData: 'Ingen data hittas',
     stripeNotConfigured: 'Betalplattformen Stripe är inte konfigurerad än.',
-    postmarkNotConfigured:
-      'Mailplattformen Postmark är inte konfigurerad korrekt.',
+    emailNotConfigured: 'E-post är inte konfigurerad korrekt.',
     stripeNotConfiguredFeature:
       'Denna funktion är inte konfigurerad i betalplattformen Stripe än.',
     copyToClipboard: 'Det uppstod ett problem vid kopiering.',
@@ -154,7 +154,7 @@ export default {
     resetPassword: 'Återställ lösenord',
     loginSuccess: 'Inloggning lyckades',
     registerHere: 'Registrera Här',
-    notAMember: 'Inte medlem än? ',
+    notAMember: 'Inte medlem än?',
     loginToContinue: 'Logga in för att fortsätta',
     forgottenPassword: 'Glömt ditt lösenord?',
     forgottenPasswordDescription:
@@ -206,12 +206,14 @@ export default {
     door: 'Dörr | Dörrar',
     interlock: 'Lås | Lås',
     memberbucksDevice: 'Spacebucks | Spacebucks',
+    fobTesterDevice: 'Fobtester | Fobtesters',
     defaultAccess: 'Medlemar har åtkomst som default',
     maintenanceLockout: 'Underhållslåsning är påslagen',
     playTheme: 'Spela tema på swipe',
     exemptSignin:
       'Undantag från kravet på inloggning på webbplatsen (om aktiverad)',
     hiddenToMembers: 'Dold från medlemmar på deras åtkomst-sida',
+    showAccountStatus: 'Visa kontostatus på enheten',
     user: 'Användare',
     totalSwipes: 'Total Swipes',
     totalTime: 'Total Time',
@@ -648,6 +650,12 @@ export default {
     totalPurchases: 'Total köp',
     totalVolume: 'Total volym',
   },
+  'fob-tester-devices': {
+    nodata: 'Det finns inga fobtester-enheter i systemet.',
+    name: 'Fobtester enhetsnamn',
+    description: 'Fobtester enhetsbeskrivning',
+    ipAddress: 'Fobtester enhet IP Address',
+  },
   registrationCard: {
     register: 'Registrera ett konto',
     alreadyAMember: 'Redan medlem? ',
@@ -695,10 +703,14 @@ export default {
     pendingInviteNewMemberDescription:
       'Du har blivit inbjuden att gå med i en faktureringsgrupp. Slutför eventuella nödvändiga steg nedan och acceptera sedan inbjudan — ditt medlemskap täcks av gruppen.',
     inviteRevokedTitle: 'Faktureringsgruppens inbjudan är inte längre giltig',
-    inviteRevoked_invalidated: 'Denna inbjudan till faktureringsgruppen har avbrutits av gruppägaren. Du kan fortfarande registrera dig för ett vanligt medlemskap nedan.',
-    inviteRevoked_expired: 'Denna inbjudan till faktureringsgruppen har löpt ut. Du kan fortfarande registrera dig för ett vanligt medlemskap, eller be gruppägaren skicka en ny inbjudan.',
-    inviteRevoked_not_found: 'Denna inbjudan till faktureringsgruppen kunde inte hittas. Du kan fortfarande registrera dig för ett vanligt medlemskap, eller be gruppägaren skicka en ny inbjudan.',
-    inviteRevoked_accepted: 'Denna inbjudan till faktureringsgruppen har redan accepterats.',
+    inviteRevoked_invalidated:
+      'Denna inbjudan till faktureringsgruppen har avbrutits av gruppägaren. Du kan fortfarande registrera dig för ett vanligt medlemskap nedan.',
+    inviteRevoked_expired:
+      'Denna inbjudan till faktureringsgruppen har löpt ut. Du kan fortfarande registrera dig för ett vanligt medlemskap, eller be gruppägaren skicka en ny inbjudan.',
+    inviteRevoked_not_found:
+      'Denna inbjudan till faktureringsgruppen kunde inte hittas. Du kan fortfarande registrera dig för ett vanligt medlemskap, eller be gruppägaren skicka en ny inbjudan.',
+    inviteRevoked_accepted:
+      'Denna inbjudan till faktureringsgruppen har redan accepterats.',
     signupWithoutGroup: 'Registrera dig utan grupp',
     pendingInviteWithSubscription:
       'Du har en aktiv prenumeration. Att acceptera denna inbjudan avslutar din individuella prenumeration. Du får en proportionell återbetalning för resterande period.',
@@ -712,7 +724,8 @@ export default {
     members: 'Gruppmedlemmar',
     isPrimary: 'Primär',
     noGroup: 'Du är inte i en faktureringsgrupp.',
-    requiresSubscription: 'Du behöver en aktiv prenumeration för att skapa en faktureringsgrupp.',
+    requiresSubscription:
+      'Du behöver en aktiv prenumeration för att skapa en faktureringsgrupp.',
     resendInvitation: 'Skicka igen',
     cancelInvitation: 'Avbryt',
     resendSuccess: 'Inbjudan skickad igen.',
@@ -757,7 +770,8 @@ export default {
     optionalAddons: 'Valfria tillägg',
     noAddonsAvailable: 'Inga tillägg är för närvarande tillgängliga.',
     differentInterval: 'Annat faktureringsintervall',
-    mixedIntervalWarning: 'Vissa tillägg har ett annat faktureringsintervall än din plan. Du kommer att få separata fakturor för dessa artiklar.',
+    mixedIntervalWarning:
+      'Vissa tillägg har ett annat faktureringsintervall än din plan. Du kommer att få separata fakturor för dessa artiklar.',
   },
   shelfRental: {
     title: 'Hylluthyrning',

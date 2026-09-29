@@ -46,6 +46,7 @@ export default {
     manageBillingGroups: 'Billing Groups',
     manageAddons: 'Subscription Addons',
     manageShelves: 'Shelf Rental',
+    djangoAdmin: 'Django Admin',
   },
   dashboard: {
     usefulResources: 'Member Resources',
@@ -76,8 +77,8 @@ export default {
     noData: 'No records found',
     stripeNotConfigured:
       'There was an error completing that action as Stripe is not configured.',
-    postmarkNotConfigured:
-      'There was an error completing that action as Postmark is not configured correctly.',
+    emailNotConfigured:
+      'There was an error completing that action as email is not configured correctly.',
     stripeNotConfiguredFeature:
       'Sorry, but this organisation has not configured Stripe so you are unable to use this feature.',
     copyToClipboard: 'There was a problem copying to your clipboard.',
@@ -160,7 +161,7 @@ export default {
     resetPassword: 'Reset Password',
     loginSuccess: 'Login Successful',
     registerHere: 'Register Here',
-    notAMember: 'Not a member? ',
+    notAMember: 'Not a member?',
     loginToContinue: 'Please login to continue',
     forgottenPassword: 'Forgot your password?',
     forgottenPasswordDescription:
@@ -212,11 +213,13 @@ export default {
     door: 'Door | Doors',
     interlock: 'Interlock | Interlocks',
     memberbucksDevice: 'Spacebucks | Spacebucks',
+    fobTesterDevice: 'Fob Tester | Fob Testers',
     defaultAccess: 'Members have access by default',
     maintenanceLockout: 'Maintenance lockout is enabled',
     playTheme: 'Play theme on swipe',
     exemptSignin: 'Exempt from site sign in requirement (if enabled)',
     hiddenToMembers: 'Hidden from members on their access permissions screen',
+    showAccountStatus: 'Show account status on device',
     user: 'User',
     totalSwipes: 'Total Swipes',
     totalTime: 'Total Time',
@@ -522,7 +525,8 @@ export default {
     cost: 'Cost',
     noAddonCost: 'No addon cost',
     removeAddon: 'Remove Add-on',
-    removeAddonConfirm: "Are you sure you want to remove this add-on from the member's subscription? This will create a proration credit.",
+    removeAddonConfirm:
+      "Are you sure you want to remove this add-on from the member's subscription? This will create a proration credit.",
     noMembers: 'No members were found that match your filter or search query.',
   },
   doors: {
@@ -690,6 +694,12 @@ export default {
     totalPurchases: 'Total Purchases',
     totalVolume: 'Total Volume',
   },
+  'fob-tester-devices': {
+    nodata: 'There are no fob tester devices in the system.',
+    name: 'Fob Tester Device Name',
+    description: 'Fob Tester Device Description',
+    ipAddress: 'Fob Tester Device IP Address',
+  },
   registrationCard: {
     register: 'Register An Account',
     alreadyAMember: 'Already a member? ',
@@ -707,7 +717,7 @@ export default {
     groupName: 'Group Name',
     createGroup: 'Create Billing Group',
     createGroupDescription:
-      'Create a billing group to cover other members\' membership fees. You will become the primary (paying) member.',
+      "Create a billing group to cover other members' membership fees. You will become the primary (paying) member.",
     createGroupSuccess: 'Billing group created successfully.',
     createGroupFailed: 'Failed to create billing group.',
     deleteGroup: 'Delete Group',
@@ -737,10 +747,14 @@ export default {
     pendingInviteNewMemberDescription:
       'You have been invited to join a billing group. Complete any required steps below and then accept the invitation — your membership will be covered by the group.',
     inviteRevokedTitle: 'Billing Group Invitation No Longer Valid',
-    inviteRevoked_invalidated: 'This billing group invitation has been cancelled by the group owner. You can still sign up for a regular membership below.',
-    inviteRevoked_expired: 'This billing group invitation has expired. You can still sign up for a regular membership, or ask the group owner to send a new invitation.',
-    inviteRevoked_not_found: 'This billing group invitation could not be found. It may have been cancelled or replaced. You can still sign up for a regular membership, or ask the group owner to send a new invitation.',
-    inviteRevoked_accepted: 'This billing group invitation has already been accepted.',
+    inviteRevoked_invalidated:
+      'This billing group invitation has been cancelled by the group owner. You can still sign up for a regular membership below.',
+    inviteRevoked_expired:
+      'This billing group invitation has expired. You can still sign up for a regular membership, or ask the group owner to send a new invitation.',
+    inviteRevoked_not_found:
+      'This billing group invitation could not be found. It may have been cancelled or replaced. You can still sign up for a regular membership, or ask the group owner to send a new invitation.',
+    inviteRevoked_accepted:
+      'This billing group invitation has already been accepted.',
     signupWithoutGroup: 'Sign Up Without Group',
     pendingInviteWithSubscription:
       'You currently have an active subscription. Accepting this invitation will cancel your individual subscription. You will receive a prorated refund for the remainder of your billing period.',
@@ -754,7 +768,8 @@ export default {
     members: 'Group Members',
     isPrimary: 'Primary',
     noGroup: 'You are not in a billing group.',
-    requiresSubscription: 'You need an active subscription to create a billing group.',
+    requiresSubscription:
+      'You need an active subscription to create a billing group.',
     resendInvitation: 'Resend',
     cancelInvitation: 'Cancel',
     resendSuccess: 'Invitation resent.',
@@ -774,7 +789,8 @@ export default {
     createAddon: 'Create Addon',
     editAddon: 'Edit Addon',
     deleteAddon: 'Delete Addon',
-    deleteAddonConfirm: 'Are you sure you want to delete this addon? This will archive the Stripe product and price.',
+    deleteAddonConfirm:
+      'Are you sure you want to delete this addon? This will archive the Stripe product and price.',
     name: 'Name',
     description: 'Description',
     addonType: 'Type',
@@ -809,7 +825,8 @@ export default {
     optionalAddons: 'Optional Add-ons',
     noAddonsAvailable: 'No add-ons are currently available.',
     differentInterval: 'Different billing interval',
-    mixedIntervalWarning: 'Some add-ons have different billing intervals to your plan. You will receive separate invoices for these items.',
+    mixedIntervalWarning:
+      'Some add-ons have different billing intervals to your plan. You will receive separate invoices for these items.',
   },
   shelfRental: {
     title: 'Shelf Rental',

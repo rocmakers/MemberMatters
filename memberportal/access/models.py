@@ -135,6 +135,13 @@ class AccessControlledDevice(
                 memberbucks_device=self,
             )
             return True
+        elif self.type == "fobtester":
+            log_event(
+                description=description,
+                event_type="generic",
+                data=data,
+            )
+            return True
 
     def log_connected(self):
         self.log_event(
@@ -288,6 +295,19 @@ class MemberbucksDevice(
     class Meta:
         verbose_name = "Memberbucks Device"
         verbose_name_plural = "Memberbucks Devices"
+
+
+class FobTesterDevice(
+    ExportModelOperationsMixin("fobtester-device"), AccessControlledDevice
+):
+    type = "fobtester"
+    show_account_status = models.BooleanField(
+        "Display account status on device", default=False
+    )
+
+    class Meta:
+        verbose_name = "Fob Tester Device"
+        verbose_name_plural = "Fob Tester Devices"
 
 
 class Doors(ExportModelOperationsMixin("door"), AccessControlledDevice):
