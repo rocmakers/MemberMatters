@@ -102,7 +102,7 @@ class UserResource(resources.ModelResource):
 
 @admin.register(User)
 class AdminLogAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-    resource_class = UserResource
+    resource_classes = [UserResource]
     pass
 
 
