@@ -57,15 +57,18 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
         }
 
         # serial_number is unique across all device subtypes (shared parent table), so check
-        # there isn't already a device with this serial number registered as a different type
+        # there isn't already a device with this serial number registered as a different type.
+        # Querying the base model never downcasts to the subclass, so isinstance() can't be used
+        # here - instead check whether a row exists in this specific subtype's table.
         existing_device = AccessControlledDevice.objects.filter(
             serial_number=device_id
         ).first()
-        if existing_device is not None and not isinstance(
-            existing_device, self.DeviceClass
+        if (
+            existing_device is not None
+            and not self.DeviceClass.objects.filter(pk=existing_device.pk).exists()
         ):
             logger.error(
-                f"Device ({device_id}) is already registered as a {existing_device.type} "
+                f"Device ({device_id}) is already registered as a different type of "
                 f"device, refusing to also register it as a {self.DeviceClass.type}."
             )
             self.accept()
@@ -106,11 +109,19 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
 
     def disconnect(self, close_code):
         logger.info("Device disconnected!")
-        logger.info("Device was connected for %s", self.last_seen - self.connected_at)
-        self.device.log_disconnected()
-        async_to_sync(self.channel_layer.group_discard)(
-            self.device_group_name, self.channel_name
-        )
+
+        if self.connected_at is not None and self.last_seen is not None:
+            logger.info(
+                "Device was connected for %s", self.last_seen - self.connected_at
+            )
+
+        if self.device is not None:
+            self.device.log_disconnected()
+
+        if self.device_group_name is not None:
+            async_to_sync(self.channel_layer.group_discard)(
+                self.device_group_name, self.channel_name
+            )
 
     def receive_json(self, content=None, **kwargs):
         """
@@ -696,7 +707,13 @@ class FobTesterConsumer(AccessDeviceConsumer):
         if not profile:
             self.device.log_event(
                 description="Fob tester lookup returned unknown card.",
-                data=json.dumps({"card_id": card_id}),
+                data=json.dumps(
+                    {
+                        "card_id": card_id,
+                        "device_name": self.device.name,
+                        "device_serial": self.device.serial_number,
+                    }
+                ),
             )
             self.send_json(
                 {
